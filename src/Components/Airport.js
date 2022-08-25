@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Airport = (props) => {
+  const { coords } = props;
+  const [airports, setAirports] = useState([]);
+
+  useEffect(() => {
+    if (coords) {
+      const getAirports = async() => {
+        const airportsData = await axios.get(`http://localhost:3000/airports/?lon=${coords.lon}&lat=${coords.lat}`);
+        console.log(airportsData)
+        setAirports(airportsData.data);
+      }
+
+      getAirports();
+    }
+  }, [coords])
+
   return (
-    <>
-      { props.airports.map(airport => {
+    <div className="airports-wrapper">
+      { coords && airports.map(airport => {
         return (
-          <div key={airport.id}>
+          <div key={airport.id} className="wrapper">
             <h2>{airport.name}</h2>
             <p>{airport.municipality}, {airport.region}</p>
             <p>{airport.iata_code}</p>
@@ -14,7 +30,7 @@ const Airport = (props) => {
           </div>
         )
       })}
-    </>
+    </div>
   )
 }
 

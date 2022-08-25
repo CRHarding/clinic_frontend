@@ -3,30 +3,41 @@ import React, { useState, useEffect }  from 'react';
 import axios from 'axios';
 
 const Clinic = (props) => {
-  const { coords } = props;
+  const { coords, sentClinics } = props;
   const [clinics, setClinics] = useState([]);
 
   useEffect(() => {
-    const getClinics = async() => {
-      const clinicsData = await axios.get(`http://localhost:3000/clinics/?lon=${coords.lon}&lat=${coords.lat}`);
-      setClinics(clinicsData.data);
-    }
+    if (!sentClinics) {
+      const getClinics = async() => {
+        const clinicsData = await axios.get(`http://localhost:3000/clinics/?lon=${coords.lon}&lat=${coords.lat}`);
+        setClinics(clinicsData.data);
+      }
 
-    getClinics();
+      getClinics();
+    }
   }, [coords])
 
   return (
-    <>
+    <div className="clinics-wrapper">
       { clinics.map(clinic => {
         return (
-          <div key={clinic.id}>
+          <div key={clinic.id} className="wrapper">
             <h2>Name: {clinic.display_name}</h2>
             <p>Distance: {parseInt(clinic.distance)}</p>
             <button onClick={() => props.getAirports(clinic)}>Select</button>
           </div>
         )
       })}
-    </>
+      { sentClinics.map(clinic => {
+        return (
+          <div key={clinic.id} className="wrapper">
+            <h2>Name: {clinic.display_name}</h2>
+            <p>Distance: {parseInt(clinic.distance)}</p>
+            <button onClick={() => props.getAirports(clinic)}>Select</button>
+          </div>
+        )
+      })}
+    </div>
   )
 }
 
